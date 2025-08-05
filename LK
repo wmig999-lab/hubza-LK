@@ -1,0 +1,2976 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ХабЗа - Цифровой строительный портал</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #1e3a5f;
+            --secondary-color: #f8a533;
+            --accent-color: #2c7a7b;
+            --light-bg: #f8f9fa;
+            --dark-text: #333;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --sidebar-width: 280px;
+            --header-height: 80px;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-text);
+            background-color: #f5f7fa;
+            overflow-x: hidden;
+        }
+        
+        /* Боковая панель */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: linear-gradient(180deg, var(--primary-color) 0%, #0f2338 100%);
+            color: white;
+            z-index: 1000;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .sidebar-logo i {
+            font-size: 2.2rem;
+            margin-right: 12px;
+            color: var(--secondary-color);
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+        
+        .sidebar-item {
+            display: block;
+            padding: 15px 25px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-item:hover {
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+            border-left-color: var(--secondary-color);
+        }
+        
+        .sidebar-item.active {
+            background-color: rgba(255,255,255,0.15);
+            color: white;
+            border-left-color: var(--secondary-color);
+        }
+        
+        .sidebar-item i {
+            margin-right: 15px;
+            font-size: 1.2rem;
+            width: 25px;
+            text-align: center;
+        }
+        
+        .sidebar-submenu {
+            padding-left: 60px;
+            display: none;
+        }
+        
+        .sidebar-item.has-submenu.active + .sidebar-submenu {
+            display: block;
+        }
+        
+        .sidebar-submenu .sidebar-item {
+            padding: 10px 25px;
+            font-size: 0.9rem;
+            border-left: none;
+        }
+        
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        
+        .sidebar-footer .btn {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        /* Основной контент */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+        
+        /* Верхняя панель */
+        .topbar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: var(--sidebar-width);
+            height: var(--header-height);
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            transition: left 0.3s ease;
+        }
+        
+        .topbar-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            cursor: pointer;
+            margin-right: 20px;
+        }
+        
+        .search-bar {
+            position: relative;
+            width: 400px;
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: 12px 45px 12px 20px;
+            border: 1px solid #e1e5e9;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(44, 122, 123, 0.1);
+        }
+        
+        .search-bar button {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 8px 15px;
+        }
+        
+        .topbar-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .topbar-icon {
+            position: relative;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--light-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .topbar-icon:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+            cursor: pointer;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 12px;
+        }
+        
+        .user-info {
+            text-align: left;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            line-height: 1.2;
+        }
+        
+        .user-role {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        /* Контент страницы */
+        .page-content {
+            padding: calc(var(--header-height) + 30px) 30px 30px;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .page-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        /* Карточки статистики */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.03) 50%);
+            border-radius: 0 0 0 100%;
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        
+        .stat-icon.primary {
+            background: rgba(30, 58, 95, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .stat-icon.success {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+        
+        .stat-icon.warning {
+            background: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .stat-icon.danger {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .stat-change {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 50px;
+        }
+        
+        .stat-change.positive {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+        
+        .stat-change.negative {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+        }
+        
+        /* Секция аналитики */
+        .analytics-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--secondary-color);
+        }
+        
+        .upload-area {
+            border: 2px dashed var(--accent-color);
+            border-radius: 15px;
+            padding: 50px;
+            text-align: center;
+            background-color: rgba(44, 122, 123, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+        
+        .upload-area:hover {
+            background-color: rgba(44, 122, 123, 0.1);
+            border-color: var(--secondary-color);
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+        }
+        
+        .analysis-progress {
+            display: none;
+        }
+        
+        .progress-container {
+            margin-bottom: 20px;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .progress-title {
+            font-weight: 600;
+        }
+        
+        .progress-value {
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-color));
+            border-radius: 10px;
+            transition: width 0.6s ease;
+        }
+        
+        .analysis-steps {
+            margin-top: 30px;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: var(--light-bg);
+            transition: all 0.3s ease;
+        }
+        
+        .step.active {
+            background: rgba(44, 122, 123, 0.1);
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .step.completed {
+            background: rgba(40, 167, 69, 0.1);
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: 700;
+            color: var(--primary-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .step.active .step-icon {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .step.completed .step-icon {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .step-description {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* Результаты анализа */
+        .results-section {
+            display: none;
+        }
+        
+        .cost-summary {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(30, 58, 95, 0.2);
+        }
+        
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .cost-item:last-child {
+            border-bottom: none;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .cost-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .cost-deviation {
+            font-size: 0.9rem;
+            padding: 5px 10px;
+            border-radius: 50px;
+            margin-left: 10px;
+        }
+        
+        .deviation-up {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: var(--danger-color);
+        }
+        
+        .deviation-down {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: var(--success-color);
+        }
+        
+        /* Таблица материалов */
+        .materials-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        .table thead {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .table thead th {
+            font-weight: 600;
+            padding: 15px;
+            border: none;
+        }
+        
+        .table tbody td {
+            padding: 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .table tbody tr:hover {
+            background-color: rgba(44, 122, 123, 0.05);
+        }
+        
+        .price-trend {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .trend-up {
+            color: var(--danger-color);
+        }
+        
+        .trend-down {
+            color: var(--success-color);
+        }
+        
+        /* Поставщики */
+        .suppliers-section {
+            margin-top: 30px;
+        }
+        
+        .supplier-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .supplier-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .supplier-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+        
+        .supplier-name {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+        
+        .supplier-rating {
+            display: flex;
+            align-items: center;
+            color: var(--secondary-color);
+        }
+        
+        .supplier-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .detail-icon {
+            color: var(--accent-color);
+            margin-right: 10px;
+        }
+        
+        .supplier-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-request {
+            background-color: var(--secondary-color);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-request:hover {
+            background-color: #e6951f;
+            transform: translateY(-3px);
+        }
+        
+        .btn-contact {
+            background-color: transparent;
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            font-weight: 600;
+            padding: 8px 18px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-contact:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .ai-badge {
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            margin-left: 10px;
+        }
+        
+        .ai-badge i {
+            margin-right: 5px;
+        }
+        
+        /* Поиск поставщиков */
+        .supplier-search-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .search-filters {
+            margin-bottom: 30px;
+        }
+        
+        .filter-group {
+            margin-bottom: 20px;
+        }
+        
+        .filter-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .filter-label i {
+            margin-right: 8px;
+            color: var(--accent-color);
+        }
+        
+        .optimization-options {
+            display: flex;
+            gap: 20px;
+            margin-top: 25px;
+        }
+        
+        .optimization-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+        
+        .optimization-card:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .optimization-card.selected {
+            border-color: var(--secondary-color);
+            background-color: rgba(248, 165, 51, 0.1);
+        }
+        
+        .optimization-icon {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+        
+        .optimization-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .optimization-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .search-results {
+            display: none;
+        }
+        
+        .result-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .result-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .summary-item {
+            text-align: center;
+        }
+        
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .summary-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .supplier-match-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .supplier-match-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background-color: var(--success-color);
+        }
+        
+        .supplier-match-card.risk-high::before {
+            background-color: var(--danger-color);
+        }
+        
+        .supplier-match-card.risk-medium::before {
+            background-color: var(--warning-color);
+        }
+        
+        .supplier-match-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+        
+        .match-score {
+            background: var(--success-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .match-score.medium {
+            background: var(--warning-color);
+        }
+        
+        .match-score.low {
+            background: var(--danger-color);
+        }
+        
+        .match-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .match-detail {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 3px;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .risk-alert {
+            background-color: rgba(220, 53, 69, 0.1);
+            border-left: 4px solid var(--danger-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .risk-alert.medium {
+            background-color: rgba(255, 193, 7, 0.1);
+            border-left-color: var(--warning-color);
+        }
+        
+        .risk-alert i {
+            font-size: 1.5rem;
+            margin-right: 15px;
+            color: var(--danger-color);
+        }
+        
+        .risk-alert.medium i {
+            color: var(--warning-color);
+        }
+        
+        .match-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        /* Градостроительный ассистент */
+        .urban-assistant-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .assistant-form {
+            margin-bottom: 30px;
+        }
+        
+        .map-selector {
+            height: 400px;
+            background: var(--light-bg);
+            border-radius: 15px;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #666;
+        }
+        
+        .map-placeholder i {
+            font-size: 3rem;
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+        
+        .assistant-results {
+            display: none;
+        }
+        
+        .plot-map {
+            height: 400px;
+            background: var(--light-bg);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .plot-parameters {
+            margin-bottom: 30px;
+        }
+        
+        .potential-metrics {
+            margin-top: 30px;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .metric-card {
+            background: var(--light-bg);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .restrictions-list {
+            margin-top: 20px;
+        }
+        
+        .restriction-item {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--warning-color);
+            transition: all 0.3s ease;
+        }
+        
+        .restriction-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .restriction-item.high-risk {
+            border-left-color: var(--danger-color);
+        }
+        
+        .restriction-item.low-risk {
+            border-left-color: var(--success-color);
+        }
+        
+        .restriction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .restriction-title {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .restriction-badge {
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .restriction-item.high-risk .restriction-badge {
+            background-color: var(--danger-color);
+        }
+        
+        .restriction-item.medium-risk .restriction-badge {
+            background-color: var(--warning-color);
+        }
+        
+        .restriction-item.low-risk .restriction-badge {
+            background-color: var(--success-color);
+        }
+        
+        .restriction-solution {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #eee;
+        }
+        
+        .infrastructure-map {
+            height: 400px;
+            background: var(--light-bg);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .infrastructure-metrics {
+            margin-bottom: 30px;
+        }
+        
+        .infra-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .infra-item {
+            background: var(--light-bg);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .infra-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .infra-item i {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+        
+        .infra-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .infra-distance {
+            color: #666;
+        }
+        
+        .development-recommendations {
+            margin-bottom: 30px;
+        }
+        
+        .recommendation-card {
+            background: var(--light-bg);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .recommendation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .recommendation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .recommendation-title {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .recommendation-score {
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-weight: 700;
+        }
+        
+        .recommendation-steps {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .recommendation-steps h6 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .recommendation-steps ol {
+            padding-left: 20px;
+        }
+        
+        .recommendation-steps li {
+            margin-bottom: 10px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        /* Интеграция с 1С */
+        .integration-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .integration-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .integration-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            height: 100%;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #eee;
+        }
+        
+        .integration-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background-color: var(--secondary-color);
+        }
+        
+        .integration-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .integration-level {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .integration-icon {
+            font-size: 3rem;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+        }
+        
+        /* Поиск товаров */
+        .search-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .search-container {
+            margin-bottom: 30px;
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 1px solid #ddd;
+            border-radius: 50px;
+            font-size: 1rem;
+        }
+        
+        .search-btn {
+            background-color: var(--secondary-color);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .search-btn:hover {
+            background-color: #e6951f;
+        }
+        
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-tag {
+            background-color: var(--light-bg);
+            border: 1px solid #ddd;
+            border-radius: 50px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-tag:hover, .filter-tag.active {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+            border: 1px solid #eee;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-img {
+            height: 200px;
+            background-color: var(--light-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #ccc;
+        }
+        
+        .product-info {
+            padding: 20px;
+        }
+        
+        .product-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .product-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .product-supplier {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .add-to-cart {
+            width: 100%;
+            background-color: var(--secondary-color);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 12px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .add-to-cart:hover {
+            background-color: #e6951f;
+        }
+        
+        /* Личный кабинет */
+        .dashboard-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .dashboard-tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 30px;
+        }
+        
+        .dashboard-tab {
+            padding: 15px 25px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .dashboard-tab:hover {
+            color: var(--primary-color);
+        }
+        
+        .dashboard-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--secondary-color);
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .order-id {
+            font-weight: 600;
+        }
+        
+        .order-status {
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-new {
+            background-color: rgba(248, 165, 51, 0.2);
+            color: var(--secondary-color);
+        }
+        
+        .status-processing {
+            background-color: rgba(44, 122, 123, 0.2);
+            color: var(--accent-color);
+        }
+        
+        .status-completed {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+        }
+        
+        .integration-status {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .status-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .status-active {
+            background-color: #28a745;
+        }
+        
+        .status-inactive {
+            background-color: #dc3545;
+        }
+        
+        .integration-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+        
+        /* Тарифы */
+        .pricing-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .pricing-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            height: 100%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #eee;
+        }
+        
+        .pricing-card.popular {
+            border: 2px solid var(--secondary-color);
+        }
+        
+        .pricing-card.popular::before {
+            content: "Популярный";
+            position: absolute;
+            top: 15px;
+            right: -30px;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 5px 40px;
+            transform: rotate(45deg);
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .plan-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+        
+        .plan-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 30px;
+        }
+        
+        .plan-features li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        
+        .plan-features li:last-child {
+            border-bottom: none;
+        }
+        
+        .plan-features li i {
+            color: var(--accent-color);
+            margin-right: 10px;
+        }
+        
+        /* Отзывы */
+        .testimonials-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .testimonial-card {
+            background: var(--light-bg);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            position: relative;
+            padding-left: 25px;
+            line-height: 1.6;
+        }
+        
+        .testimonial-text::before {
+            content: """;
+            position: absolute;
+            left: 0;
+            top: -10px;
+            font-size: 3rem;
+            color: var(--secondary-color);
+            opacity: 0.5;
+        }
+        
+        .client-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .client-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        /* Контакты */
+        .contact-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .contact-form {
+            background: var(--light-bg);
+            border-radius: 15px;
+            padding: 30px;
+        }
+        
+        .contact-info {
+            padding-left: 40px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+        
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        
+        .contact-details h5 {
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+        
+        /* Футер */
+        footer {
+            background: linear-gradient(135deg, var(--primary-color), #0f2338);
+            color: white;
+            padding: 60px 0 30px;
+            margin-left: var(--sidebar-width);
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--secondary-color);
+            padding-left: 5px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .social-link {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .social-link:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* Модальные окна */
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+        }
+        
+        .modal-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            border: none;
+        }
+        
+        .modal-body {
+            padding: 30px;
+        }
+        
+        .file-upload {
+            border: 2px dashed var(--accent-color);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background-color: rgba(44, 122, 123, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .file-types {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .file-type {
+            background-color: var(--light-bg);
+            border: 1px solid #ddd;
+            border-radius: 50px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .file-type i {
+            margin-right: 5px;
+            color: var(--accent-color);
+        }
+        
+        /* Панель уведомлений */
+        .notification-panel {
+            position: fixed;
+            top: calc(var(--header-height) + 20px);
+            right: 20px;
+            width: 400px;
+            max-height: calc(100vh - var(--header-height) - 40px);
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            overflow: hidden;
+        }
+        
+        .notification-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .notification-list {
+            max-height: calc(100vh - var(--header-height) - 140px);
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .notification-item {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background: var(--light-bg);
+            border-left: 4px solid var(--warning-color);
+            transition: all 0.3s ease;
+        }
+        
+        .notification-item:hover {
+            transform: translateX(-5px);
+        }
+        
+        .notification-item.high-risk {
+            border-left-color: var(--danger-color);
+            background: rgba(220, 53, 69, 0.1);
+        }
+        
+        .notification-item.success {
+            border-left-color: var(--success-color);
+            background: rgba(40, 167, 69, 0.1);
+        }
+        
+        .notification-time {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* Кнопки */
+        .btn {
+            border-radius: 50px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border: none;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #e6951f;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(248, 165, 51, 0.3);
+        }
+        
+        .btn-outline-primary {
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            background: transparent;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+        
+        /* Адаптивность для больших экранов */
+        @media (min-width: 1600px) {
+            .container-fluid {
+                max-width: 1400px;
+            }
+        }
+        
+        /* Для очень широких экранов */
+        @media (min-width: 1920px) {
+            .container-fluid {
+                max-width: 1600px;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Боковая панель -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="sidebar-logo">
+                <i class="bi bi-building"></i>
+                <span>ХабЗа</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-menu">
+            <a href="#dashboard" class="sidebar-item active">
+                <i class="bi bi-speedometer2"></i>
+                <span>Панель управления</span>
+            </a>
+            
+            <a href="#analytics" class="sidebar-item has-submenu">
+                <i class="bi bi-graph-up"></i>
+                <span>Аналитика</span>
+            </a>
+            
+            <div class="sidebar-submenu">
+                <a href="#project-analysis" class="sidebar-item">Анализ проектов</a>
+                <a href="#cost-calculation" class="sidebar-item">Калькуляция стоимости</a>
+                <a href="#price-forecast" class="sidebar-item">Прогноз цен</a>
+            </div>
+            
+            <a href="#supplier-search" class="sidebar-item">
+                <i class="bi bi-search"></i>
+                <span>Поиск поставщиков</span>
+            </a>
+            
+            <a href="#urban-assistant" class="sidebar-item">
+                <i class="bi bi-map"></i>
+                <span>Град. ассистент</span>
+            </a>
+            
+            <a href="#materials" class="sidebar-item">
+                <i class="bi bi-box-seam"></i>
+                <span>Материалы</span>
+            </a>
+            
+            <a href="#orders" class="sidebar-item">
+                <i class="bi bi-cart-check"></i>
+                <span>Заказы</span>
+            </a>
+            
+            <a href="#integration" class="sidebar-item">
+                <i class="bi bi-gear"></i>
+                <span>Интеграция 1С</span>
+            </a>
+            
+            <a href="#reports" class="sidebar-item">
+                <i class="bi bi-file-earmark-text"></i>
+                <span>Отчеты</span>
+            </a>
+            
+            <a href="#settings" class="sidebar-item">
+                <i class="bi bi-sliders"></i>
+                <span>Настройки</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-footer">
+            <button class="btn btn-outline-light btn-sm w-100">Поддержка</button>
+            <button class="btn btn-outline-light btn-sm w-100">Выход</button>
+        </div>
+    </div>
+    
+    <!-- Основной контент -->
+    <div class="main-content">
+        <!-- Верхняя панель -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle">
+                    <i class="bi bi-list"></i>
+                </button>
+                
+                <div class="search-bar">
+                    <input type="text" placeholder="Поиск материалов, поставщиков, проектов...">
+                    <button><i class="bi bi-search"></i></button>
+                </div>
+            </div>
+            
+            <div class="topbar-right">
+                <div class="topbar-icon">
+                    <i class="bi bi-bell"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+                
+                <div class="topbar-icon">
+                    <i class="bi bi-envelope"></i>
+                    <span class="notification-badge">5</span>
+                </div>
+                
+                <div class="user-menu">
+                    <div class="user-avatar">АИ</div>
+                    <div class="user-info">
+                        <div class="user-name">Александр Иванов</div>
+                        <div class="user-role">Директор по закупкам</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Контент страницы -->
+        <div class="page-content">
+            <!-- Заголовок страницы -->
+            <div class="page-header">
+                <h1 class="page-title">Панель управления</h1>
+                <p class="page-subtitle">Добро пожаловать в цифровой строительный портал ХабЗа</p>
+            </div>
+            
+            <!-- Карточки статистики -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class="bi bi-cart-check"></i>
+                    </div>
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">Активных заказов</div>
+                    <div class="stat-change positive">+12%</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class="bi bi-currency-dollar"></i>
+                    </div>
+                    <div class="stat-value">₽12.4М</div>
+                    <div class="stat-label">Объем закупок</div>
+                    <div class="stat-change positive">+8%</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class="bi bi-truck"></i>
+                    </div>
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">Поставок в пути</div>
+                    <div class="stat-change negative">-3%</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon danger">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Риски срыва сроков</div>
+                    <div class="stat-change positive">-25%</div>
+                </div>
+            </div>
+            
+            <!-- Секция аналитики -->
+            <div class="analytics-section" id="analytics">
+                <div class="section-header">
+                    <h2 class="section-title">Аналитика проектной документации <span class="ai-badge"><i class="bi bi-cpu"></i>ИИ</span></h2>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                        <i class="bi bi-cloud-upload me-2"></i>Загрузить документы
+                    </button>
+                </div>
+                
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="bi bi-file-earmark-arrow-up"></i>
+                    </div>
+                    <h4>Загрузите проектную документацию</h4>
+                    <p class="text-muted">Перетащите файлы сюда или нажмите для выбора</p>
+                    <button class="btn btn-outline-primary mt-3">Выбрать файлы</button>
+                    
+                    <div class="file-types">
+                        <div class="file-type"><i class="bi bi-file-pdf"></i>PDF</div>
+                        <div class="file-type"><i class="bi bi-file-word"></i>DOCX</div>
+                        <div class="file-type"><i class="bi bi-file-excel"></i>Excel</div>
+                        <div class="file-type"><i class="bi bi-file-image"></i>Чертежи</div>
+                    </div>
+                </div>
+                
+                <div class="analysis-progress" id="analysisProgress">
+                    <h5 class="mb-3">Анализ документации...</h5>
+                    
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span class="progress-title">Общий прогресс</span>
+                            <span class="progress-value">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-steps">
+                        <div class="step active" id="step1">
+                            <div class="step-icon">1</div>
+                            <div class="step-content">
+                                <div class="step-title">Распознавание документов</div>
+                                <div class="step-description">OCR и извлечение текста</div>
+                            </div>
+                        </div>
+                        
+                        <div class="step" id="step2">
+                            <div class="step-icon">2</div>
+                            <div class="step-content">
+                                <div class="step-title">Анализ спецификаций</div>
+                                <div class="step-description">NLP-обработка и структурирование</div>
+                            </div>
+                        </div>
+                        
+                        <div class="step" id="step3">
+                            <div class="step-icon">3</div>
+                            <div class="step-content">
+                                <div class="step-title">Калькуляция себестоимости</div>
+                                <div class="step-description">Расчет текущих цен и прогноз</div>
+                            </div>
+                        </div>
+                        
+                        <div class="step" id="step4">
+                            <div class="step-icon">4</div>
+                            <div class="step-content">
+                                <div class="step-title">Подбор поставщиков</div>
+                                <div class="step-description">ИИ-сопоставление и рекомендации</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="results-section" id="resultsSection">
+                    <div class="cost-summary">
+                        <h4 class="mb-4">Калькуляция себестоимости проекта</h4>
+                        
+                        <div class="cost-item">
+                            <span>Базовая смета</span>
+                            <div>
+                                <span class="cost-value">12 450 000 ₽</span>
+                            </div>
+                        </div>
+                        
+                        <div class="cost-item">
+                            <span>Текущая стоимость материалов</span>
+                            <div>
+                                <span class="cost-value">13 820 000 ₽</span>
+                                <span class="cost-deviation deviation-up">+11%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="cost-item">
+                            <span>Прогноз на 3 месяца</span>
+                            <div>
+                                <span class="cost-value">14 650 000 ₽</span>
+                                <span class="cost-deviation deviation-up">+18%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="cost-item">
+                            <span>Оптимальная стоимость с подбором поставщиков</span>
+                            <div>
+                                <span class="cost-value">13 150 000 ₽</span>
+                                <span class="cost-deviation deviation-down">-5%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="materials-table">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Материал</th>
+                                    <th>Объем</th>
+                                    <th>Базовая цена</th>
+                                    <th>Текущая цена</th>
+                                    <th>Тренд</th>
+                                    <th>Прогноз</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Цемент М500 Д0</strong></td>
+                                    <td>250 тонн</td>
+                                    <td>4 500 ₽/т</td>
+                                    <td>4 850 ₽/т</td>
+                                    <td><span class="price-trend trend-up">+7.8%</span></td>
+                                    <td>5 100 ₽/т</td>
+                                    <td>
+                                        <button class="btn btn-outline-primary btn-sm">Найти поставщиков</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Арматура А500С 12мм</strong></td>
+                                    <td>85 тонн</td>
+                                    <td>48 000 ₽/т</td>
+                                    <td>52 300 ₽/т</td>
+                                    <td><span class="price-trend trend-up">+9.0%</span></td>
+                                    <td>54 500 ₽/т</td>
+                                    <td>
+                                        <button class="btn btn-outline-primary btn-sm">Найти поставщиков</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Бетон B25</strong></td>
+                                    <td>1 200 м³</td>
+                                    <td>3 800 ₽/м³</td>
+                                    <td>4 050 ₽/м³</td>
+                                    <td><span class="price-trend trend-up">+6.6%</span></td>
+                                    <td>4 200 ₽/м³</td>
+                                    <td>
+                                        <button class="btn btn-outline-primary btn-sm">Найти поставщиков</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="suppliers-section">
+                        <h4 class="mb-4">Рекомендованные поставщики <span class="ai-badge"><i class="bi bi-cpu"></i>ИИ</span></h4>
+                        
+                        <div class="row">
+                            <div class="col-lg-6 mb-4">
+                                <div class="supplier-card">
+                                    <div class="supplier-header">
+                                        <div>
+                                            <div class="supplier-name">ООО "СтройРесурс"</div>
+                                            <div class="supplier-rating">
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-half"></i>
+                                                <span class="ms-2">4.7</span>
+                                            </div>
+                                        </div>
+                                        <div class="position-relative">
+                                            <span class="badge bg-success">Оптимальное предложение</span>
+                                            <span class="notification-badge">3</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="supplier-details">
+                                        <div class="detail-item">
+                                            <i class="bi bi-geo-alt detail-icon"></i>
+                                            <span>Москва и МО</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="bi bi-truck detail-icon"></i>
+                                            <span>Доставка 1-3 дня</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="bi bi-piggy-bank detail-icon"></i>
+                                            <span>Скидка 5% при заказе от 50т</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="bi bi-shield-check detail-icon"></i>
+                                            <span>Гарантия качества</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="supplier-actions">
+                                        <button class="btn-request">Отправить запрос</button>
+                                        <button class="btn-contact">Связаться</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-6 mb-4">
+                                <div class="supplier-card">
+                                    <div class="supplier-header">
+                                        <div>
+                                            <div class="supplier-name">АО "ЦементПром"</div>
+                                            <div class="supplier-rating">
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star"></i>
+                                                <span class="ms-2">4.2</span>
+                                            </div>
+                                        </div>
+                                        <span class="badge bg-warning">Производитель</span>
+                                    </div>
+                                    
+                                    <div class="supplier-details">
+                                        <div class="detail-item">
+                                            <i class="bi bi-geo-alt detail-icon"></i>
+                                            <span>Рязанская обл.</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="bi bi-truck detail-icon"></i>
+                                            <span>Доставка 3-5 дней</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="bi bi-piggy-bank detail-icon"></i>
+                                            <span>Цена производителя</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="bi bi-recycle detail-icon"></i>
+                                            <span>Собственное производство</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="supplier-actions">
+                                        <button class="btn-request">Отправить запрос</button>
+                                        <button class="btn-contact">Связаться</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Поиск поставщиков -->
+            <div class="supplier-search-section" id="supplier-search">
+                <div class="section-header">
+                    <h2 class="section-title">ИИ-Модуль "Поиск Поставщика" <span class="ai-badge"><i class="bi bi-cpu"></i>ИИ</span></h2>
+                </div>
+                
+                <div class="search-filters">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="filter-group">
+                                <div class="filter-label">
+                                    <i class="bi bi-box-seam"></i>Материал
+                                </div>
+                                <select class="form-select">
+                                    <option selected>Цемент М500 Д0</option>
+                                    <option>Арматура А500С 12мм</option>
+                                    <option>Бетон B25</option>
+                                    <option>Кирпич рядовой М150</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="filter-group">
+                                <div class="filter-label">
+                                    <i class="bi bi-calculator"></i>Объем
+                                </div>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" value="250" placeholder="Объем">
+                                    <span class="input-group-text">тонн</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="filter-group">
+                                <div class="filter-label">
+                                    <i class="bi bi-calendar3"></i>Срок поставки
+                                </div>
+                                <input type="date" class="form-control" value="2024-02-15">
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="filter-group">
+                                <div class="filter-label">
+                                    <i class="bi bi-geo-alt"></i>Геолокация объекта
+                                </div>
+                                <input type="text" class="form-control" value="г. Москва, ул. Строительная, 15" placeholder="Адрес объекта">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="optimization-options">
+                        <div class="optimization-card selected" data-opt="cost">
+                            <div class="optimization-icon">
+                                <i class="bi bi-cash"></i>
+                            </div>
+                            <div class="optimization-title">Мин. стоимость</div>
+                            <div class="optimization-desc">Оптимальная цена с учетом всех факторов</div>
+                        </div>
+                        
+                        <div class="optimization-card" data-opt="time">
+                            <div class="optimization-icon">
+                                <i class="bi bi-clock-history"></i>
+                            </div>
+                            <div class="optimization-title">Мин. срок</div>
+                            <div class="optimization-desc">Быстрая поставка в сжатые сроки</div>
+                        </div>
+                        
+                        <div class="optimization-card" data-opt="balance">
+                            <div class="optimization-icon">
+                                <i class="bi bi-balance-scale"></i>
+                            </div>
+                            <div class="optimization-title">Оптимальный баланс</div>
+                            <div class="optimization-desc">Лучшее соотношение цена/качество/срок</div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <button class="btn btn-primary btn-lg" onclick="startSupplierSearch()">
+                            <i class="bi bi-search me-2"></i>Найти поставщиков
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="search-results" id="searchResults">
+                    <div class="result-header">
+                        <h3>Результаты поиска поставщиков</h3>
+                        <div class="result-summary">
+                            <div class="summary-item">
+                                <div class="summary-value">12</div>
+                                <div class="summary-label">Найдено поставщиков</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-value">4 720 ₽</div>
+                                <div class="summary-label">Средняя цена</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-value">3 дня</div>
+                                <div class="summary-label">Средний срок</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-value">98%</div>
+                                <div class="summary-label">Соответствие</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-lg-6 mb-4">
+                            <div class="supplier-match-card">
+                                <div class="match-header">
+                                    <div>
+                                        <div class="supplier-name">ООО "СтройРесурс"</div>
+                                        <div class="supplier-rating">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-half"></i>
+                                            <span class="ms-2">4.7</span>
+                                        </div>
+                                    </div>
+                                    <div class="match-score">95% совпадение</div>
+                                </div>
+                                
+                                <div class="match-details">
+                                    <div class="match-detail">
+                                        <span class="detail-label">Цена</span>
+                                        <span class="detail-value">4 650 ₽/т</span>
+                                    </div>
+                                    <div class="match-detail">
+                                        <span class="detail-label">Срок</span>
+                                        <span class="detail-value">2 дня</span>
+                                    </div>
+                                    <div class="match-detail">
+                                        <span class="detail-label">Остаток</span>
+                                        <span class="detail-value">300 т</span>
+                                    </div>
+                                    <div class="match-detail">
+                                        <span class="detail-label">Рейтинг</span>
+                                        <span class="detail-value">4.7/5</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="risk-alert medium">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    <div>
+                                        <strong>Средний риск:</strong> Поставщик имеет загруженность в указанные сроки. Рекомендуется подтвердить наличие.
+                                    </div>
+                                </div>
+                                
+                                <div class="match-actions">
+                                    <button class="btn-request">Отправить запрос</button>
+                                    <button class="btn-contact">Связаться</button>
+                                    <button class="btn btn-outline-primary btn-small">Детали</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Градостроительный ассистент -->
+            <div class="urban-assistant-section" id="urban-assistant">
+                <div class="section-header">
+                    <h2 class="section-title">Градостроительный Ассистент <span class="ai-badge"><i class="bi bi-cpu"></i>ИИ</span></h2>
+                </div>
+                
+                <div class="assistant-form">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="cadastralNumber" placeholder="Кадастровый номер (например: 50:21:0100201:1234)">
+                                <button class="btn btn-primary" type="button" onclick="analyzePlot()">Анализировать</button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-outline-primary w-100" type="button" onclick="showMapSelector()">
+                                <i class="bi bi-map me-2"></i>Выбрать на карте
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="map-selector" id="mapSelector" style="display: none;">
+                        <div class="map-placeholder">
+                            <i class="bi bi-map"></i>
+                            <p>Интерактивная карта для выбора участка</p>
+                            <button class="btn btn-primary btn-sm mt-2">Выбрать участок</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="assistant-results" id="assistantResults" style="display: none;">
+                    <ul class="nav nav-tabs" id="resultTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#basic" type="button" role="tab">Основные параметры</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="restrictions-tab" data-bs-toggle="tab" data-bs-target="#restrictions" type="button" role="tab">Ограничения</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="infrastructure-tab" data-bs-toggle="tab" data-bs-target="#infrastructure" type="button" role="tab">Инфраструктура</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="recommendations-tab" data-bs-toggle="tab" data-bs-target="#recommendations" type="button" role="tab">Рекомендации</button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content" id="resultTabsContent">
+                        <div class="tab-pane fade show active" id="basic" role="tabpanel">
+                            <div class="plot-map">
+                                <div class="map-placeholder">
+                                    <i class="bi bi-map"></i>
+                                    <p>Карта участка с границами и зонированием</p>
+                                </div>
+                            </div>
+                            
+                            <div class="plot-parameters">
+                                <h4>Основные параметры участка</h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <table class="table table-borderless">
+                                            <tr>
+                                                <td><strong>Кадастровый номер:</strong></td>
+                                                <td id="resultCadastral">50:21:0100201:1234</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Площадь:</strong></td>
+                                                <td id="resultArea">2 500 м²</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Категория земель:</strong></td>
+                                                <td id="resultCategory">Земли населенных пунктов</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>ВРИ (основной):</strong></td>
+                                                <td id="resultVRI">ИЖС</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <table class="table table-borderless">
+                                            <tr>
+                                                <td><strong>Территориальная зона:</strong></td>
+                                                <td id="resultZone">Ж-1 (Зона застройки индивидуальными жилыми домами)</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Плотность застройки:</strong></td>
+                                                <td id="resultDensity">30%</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Макс. этажность:</strong></td>
+                                                <td id="resultFloors">3 этажа</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Макс. процент застройки:</strong></td>
+                                                <td id="resultBuildPercent">40%</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                <div class="potential-metrics">
+                                    <h4>Потенциал участка</h4>
+                                    <div class="metrics-grid">
+                                        <div class="metric-card">
+                                            <div class="metric-value">1 000 м²</div>
+                                            <div class="metric-label">Площадь застройки</div>
+                                        </div>
+                                        <div class="metric-card">
+                                            <div class="metric-value">3 000 м²</div>
+                                            <div class="metric-label">Общая площадь</div>
+                                        </div>
+                                        <div class="metric-card">
+                                            <div class="metric-value">85%</div>
+                                            <div class="metric-label">Подъездность</div>
+                                        </div>
+                                        <div class="metric-card">
+                                            <div class="metric-value">2.5</div>
+                                            <div class="metric-label">Индекс привлекательности</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Панель уведомлений -->
+    <div class="notification-panel" id="notificationPanel">
+        <div class="notification-header">
+            <h5 class="mb-0">Уведомления о рисках</h5>
+            <button class="btn-close btn-close-white" onclick="closeNotifications()"></button>
+        </div>
+        <div class="notification-list" id="notificationList">
+            <div class="notification-item high-risk">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong>Высокий риск срыва сроков</strong>
+                        <div>Поставщик АО "ЦементПром" может не успеть доставить материалы к указанному сроку из-за удаленности.</div>
+                        <div class="notification-time">2 минуты назад</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="notification-item medium-risk">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong>Средний риск дефицита</strong>
+                        <div>У ООО "СтройРесурс" ограниченное количество материала на складе. Рекомендуется ускорить оформление заказа.</div>
+                        <div class="notification-time">15 минут назад</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="notification-item success">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong>Оптимальный поставщик найден</strong>
+                        <div>ООО "МеталлТрейд" соответствует всем требованиям проекта. Рекомендуется к сотрудничеству.</div>
+                        <div class="notification-time">1 час назад</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно загрузки документов -->
+    <div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Загрузка проектной документации</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="file-upload">
+                        <i class="bi bi-cloud-upload" style="font-size: 3rem; color: var(--accent-color); margin-bottom: 20px;"></i>
+                        <h4>Перетащите файлы сюда</h4>
+                        <p class="text-muted">или нажмите для выбора файлов</p>
+                        <input type="file" class="d-none" id="fileInput" multiple accept=".pdf,.docx,.doc,.xls,.xlsx,.dwg,.dxf">
+                        <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">Выбрать файлы</button>
+                        
+                        <div class="file-types mt-4">
+                            <div class="file-type"><i class="bi bi-file-pdf"></i>PDF</div>
+                            <div class="file-type"><i class="bi bi-file-word"></i>DOC/DOCX</div>
+                            <div class="file-type"><i class="bi bi-file-excel"></i>XLS/XLSX</div>
+                            <div class="file-type"><i class="bi bi-file-image"></i>DWG/DXF</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h5>Что будет проанализировано:</h5>
+                        <ul>
+                            <li>Спецификации материалов и оборудования</li>
+                            <li>Объемы работ и нормативы расхода</li>
+                            <li>Технические требования и ГОСТы</li>
+                            <li>График строительства и ключевые даты</li>
+                            <li>Сметная документация</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-info mt-4">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        После загрузки документов система автоматически проведет анализ и предоставит рекомендации по оптимизации затрат.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary" onclick="startAnalysis()">Начать анализ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Функция для симуляции анализа документов
+        function startAnalysis() {
+            // Закрываем модальное окно
+            const uploadModal = bootstrap.Modal.getInstance(document.getElementById('uploadModal'));
+            uploadModal.hide();
+            
+            // Показываем прогресс анализа
+            document.getElementById('uploadArea').style.display = 'none';
+            document.getElementById('analysisProgress').style.display = 'block';
+            
+            // Симулируем прогресс
+            let progress = 0;
+            const progressBar = document.querySelector('.progress-fill');
+            const progressValue = document.querySelector('.progress-value');
+            const steps = ['step1', 'step2', 'step3', 'step4'];
+            let currentStep = 0;
+            
+            const interval = setInterval(() => {
+                progress += 5;
+                progressBar.style.width = progress + '%';
+                progressValue.textContent = progress + '%';
+                
+                // Активируем шаги анализа
+                if (progress >= 25 && currentStep === 0) {
+                    document.getElementById(steps[0]).classList.add('completed');
+                    document.getElementById(steps[1]).classList.add('active');
+                    currentStep = 1;
+                } else if (progress >= 50 && currentStep === 1) {
+                    document.getElementById(steps[1]).classList.add('completed');
+                    document.getElementById(steps[2]).classList.add('active');
+                    currentStep = 2;
+                } else if (progress >= 75 && currentStep === 2) {
+                    document.getElementById(steps[2]).classList.add('completed');
+                    document.getElementById(steps[3]).classList.add('active');
+                    currentStep = 3;
+                } else if (progress >= 100) {
+                    document.getElementById(steps[3]).classList.add('completed');
+                    clearInterval(interval);
+                    
+                    // Показываем результаты
+                    setTimeout(() => {
+                        document.getElementById('analysisProgress').style.display = 'none';
+                        document.getElementById('resultsSection').style.display = 'block';
+                        
+                        // Показываем уведомление
+                        showNotification('Анализ завершен! Рекомендации по поставщикам готовы.');
+                    }, 1000);
+                }
+            }, 200);
+        }
+        
+        // Функция для симуляции поиска поставщиков
+        function startSupplierSearch() {
+            // Показываем результаты поиска
+            document.getElementById('searchResults').style.display = 'block';
+            
+            // Показываем панель уведомлений
+            showNotificationPanel();
+            
+            // Прокручиваем к результатам
+            document.getElementById('searchResults').scrollIntoView({ behavior: 'smooth' });
+            
+            // Симулируем добавление уведомлений
+            setTimeout(() => {
+                addNotification('high-risk', 'Высокий риск срыва сроков', 'Поставщик АО "ЦементПром" может не успеть доставить материалы к указанному сроку из-за удаленности.');
+            }, 2000);
+            
+            setTimeout(() => {
+                addNotification('medium-risk', 'Средний риск дефицита', 'У ООО "СтройРесурс" ограниченное количество материала на складе. Рекомендуется ускорить оформление заказа.');
+            }, 4000);
+            
+            setTimeout(() => {
+                addNotification('success', 'Оптимальный поставщик найден', 'ООО "МеталлТрейд" соответствует всем требованиям проекта. Рекомендуется к сотрудничеству.');
+            }, 6000);
+        }
+        
+        // Функция для анализа участка
+        function analyzePlot() {
+            const cadastralNumber = document.getElementById('cadastralNumber').value;
+            
+            if (!cadastralNumber) {
+                showNotification('Пожалуйста, введите кадастровый номер участка');
+                return;
+            }
+            
+            // Показываем индикатор загрузки
+            showNotification('Выполняется анализ участка...');
+            
+            // Симулируем задержку анализа
+            setTimeout(() => {
+                // Показываем результаты
+                document.getElementById('assistantResults').style.display = 'block';
+                
+                // Прокручиваем к результатам
+                document.getElementById('assistantResults').scrollIntoView({ behavior: 'smooth' });
+                
+                // Показываем уведомление о завершении
+                showNotification('Анализ завершен! Результаты готовы.');
+                
+                // Добавляем уведомление о рисках
+                setTimeout(() => {
+                    addNotification('high-risk', 'Обнаружено ограничение', 'Участок частично попадает в санитарно-защитную зону промышленного предприятия.');
+                }, 2000);
+            }, 2000);
+        }
+        
+        // Функция для показа выбора на карте
+        function showMapSelector() {
+            const mapSelector = document.getElementById('mapSelector');
+            mapSelector.style.display = mapSelector.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        // Функция для показа уведомлений
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-success alert-dismissible fade show position-fixed';
+            notification.style.cssText = 'top: 100px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(notification);
+            
+            // Автоматически скрываем через 5 секунд
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+        
+        // Функция для показа панели уведомлений
+        function showNotificationPanel() {
+            const panel = document.getElementById('notificationPanel');
+            panel.style.display = 'block';
+            
+            // Автоматически скрываем через 30 секунд
+            setTimeout(() => {
+                panel.style.display = 'none';
+            }, 30000);
+        }
+        
+        // Функция для закрытия панели уведомлений
+        function closeNotifications() {
+            document.getElementById('notificationPanel').style.display = 'none';
+        }
+        
+        // Функция для добавления уведомления в панель
+        function addNotification(type, title, message) {
+            const notificationList = document.getElementById('notificationList');
+            const notification = document.createElement('div');
+            notification.className = `notification-item ${type}`;
+            notification.innerHTML = `
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong>${title}</strong>
+                        <div>${message}</div>
+                        <div class="notification-time">Только что</div>
+                    </div>
+                </div>
+            `;
+            
+            // Добавляем в начало списка
+            notificationList.insertBefore(notification, notificationList.firstChild);
+            
+            // Ограничиваем количество уведомлений
+            if (notificationList.children.length > 5) {
+                notificationList.removeChild(notificationList.lastChild);
+            }
+        }
+        
+        // Обработка подменю в боковой панели
+        document.querySelectorAll('.sidebar-item.has-submenu').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.classList.toggle('active');
+            });
+        });
+        
+        // Обработка оптимизационных карточек
+        document.querySelectorAll('.optimization-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.optimization-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                const optimizationType = this.dataset.opt;
+                showNotification(`Выбран тип оптимизации: ${this.querySelector('.optimization-title').textContent}`);
+            });
+        });
+        
+        // Drag and drop для загрузки файлов
+        const uploadArea = document.getElementById('uploadArea');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.backgroundColor = 'rgba(44, 122, 123, 0.1)';
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.backgroundColor = 'rgba(44, 122, 123, 0.05)';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.backgroundColor = 'rgba(44, 122, 123, 0.05)';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                showNotification(`Загружено файлов: ${files.length}`);
+                // Здесь была бы обработка файлов
+            }
+        });
+    </script>
+</body>
+</html>
